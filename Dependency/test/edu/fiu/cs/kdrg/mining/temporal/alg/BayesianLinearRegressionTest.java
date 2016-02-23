@@ -12,7 +12,7 @@ public class BayesianLinearRegressionTest {
 	
 	BayesianLinearRegression blr = new BayesianLinearRegression(1,1);
 	
-	RecordIterator iterator = new RecordIterator("records.data");
+	RecordIterator iterator = new RecordIterator("data/records.data");
 
 	@Test
 	public void test() {

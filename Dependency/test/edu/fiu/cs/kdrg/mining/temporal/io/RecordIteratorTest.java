@@ -6,7 +6,7 @@ import org.ejml.simple.SimpleMatrix;
 import org.junit.Test;
 
 public class RecordIteratorTest {
-	RecordIterator iterator = new RecordIterator("records.data");
+	RecordIterator iterator = new RecordIterator("data/records.data");
 
 	@Test
 	public void testHasNext() {
