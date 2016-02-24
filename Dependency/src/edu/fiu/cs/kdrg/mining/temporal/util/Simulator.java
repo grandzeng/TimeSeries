@@ -53,12 +53,12 @@ public class Simulator {
 	/**
 	 * The mean of the coefficients
 	 */
-	private double mean = 10.0;
+	private double mean = 0.0;
 
 	/**
 	 * The standard deviation
 	 */
-	private double std = 3.0;
+	private double std = 1.0;
 
 	/**
 	 * The random number generator.
@@ -95,14 +95,20 @@ public class Simulator {
 	 */
 	public void metadata(int timestamp) {
 		// constant dependency
-		if (timestamp != 0)
+		if (timestamp != 0){
+			writer.writeMetadata(timestamp, dependency);
 			return;
+		}
 		double p;
+		double temp;
 		for (int i = 0; i < dependency.numRows(); i++) {
 			for (int j = 0; j < dependency.numCols(); j++) {
 				p = rand.nextDouble();
 				if (p < sparsity) {
-					dependency.set(i, j, rand.nextGaussian() * std + mean);
+					do{
+						temp = rand.nextGaussian();
+					}while(Math.abs(temp)>0.5);
+					dependency.set(i, j, temp * std + mean);
 				} else {
 					dependency.set(i, j, 0.0);
 				}
@@ -160,7 +166,7 @@ public class Simulator {
 		}
 
 		public void writeMetadata(int timestamp, SimpleMatrix meta) {
-			metadataWriter.print(timestamp + ",");
+//			metadataWriter.print(timestamp + ",");
 			outLine(meta, metadataWriter);
 
 		}
