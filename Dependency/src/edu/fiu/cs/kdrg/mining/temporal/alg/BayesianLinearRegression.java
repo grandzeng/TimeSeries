@@ -3,6 +3,7 @@ package edu.fiu.cs.kdrg.mining.temporal.alg;
 import org.ejml.simple.SimpleMatrix;
 
 import edu.fiu.cs.kdrg.mining.temporal.core.TimeFrame;
+import edu.fiu.cs.kdrg.mining.temporal.io.RecordWriter;
 
 /**
  * 
@@ -28,6 +29,8 @@ public class BayesianLinearRegression implements OnlineRegression {
 	private double[] igbs;
 
 	private TimeFrame tf;
+
+	private RecordWriter rw;
 
 	public BayesianLinearRegression(int lag, int dimension) {
 		this.lag = lag;
@@ -64,7 +67,7 @@ public class BayesianLinearRegression implements OnlineRegression {
 
 	@Override
 	public SimpleMatrix getPosteriorVariance(int dim) {
-//		return precisionWeights.invert();
+		// return precisionWeights.invert();
 		double v = 2 * iga;
 		SimpleMatrix sigma = precisionWeights.invert().scale(igbs[dim] / iga);
 		return sigma.scale(v / (v - 2));
@@ -78,18 +81,20 @@ public class BayesianLinearRegression implements OnlineRegression {
 		SimpleMatrix newMeanWeights;
 		iga += 0.5;
 		double y;
-		SimpleMatrix xTy;
+		SimpleMatrix xy;
 		for (int i = 0; i < dimension; i++) {
 			y = vector.get(i);
-			xTy = x.transpose().scale(y);
-			SimpleMatrix temp1 = precisionWeights.mult(meanWeights[i]).plus(xTy);
+			xy = x.scale(y);
+			SimpleMatrix temp1 = precisionWeights.mult(meanWeights[i]).plus(xy);
 			newMeanWeights = newPrecisionWeights.invert().mult(temp1);
 			igbs[i] += 0.5 * (meanWeights[i].transpose().mult(precisionWeights).dot(meanWeights[i]) + y * y
 					- newMeanWeights.transpose().mult(newPrecisionWeights).dot(newMeanWeights));
 			meanWeights[i] = newMeanWeights;
 		}
-		precisionWeights = newPrecisionWeights;
 
+		precisionWeights = newPrecisionWeights;
+		if (rw != null)
+			rw.outLine(meanWeights);
 		tf.shift(vector);
 
 	}
@@ -104,5 +109,9 @@ public class BayesianLinearRegression implements OnlineRegression {
 
 	public int getDimension() {
 		return dimension;
+	}
+
+	public void setOutput(RecordWriter rw) {
+		this.rw = rw;
 	}
 }
