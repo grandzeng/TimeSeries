@@ -8,14 +8,15 @@ import org.junit.Test;
 import edu.fiu.cs.kdrg.mining.temporal.core.TimeFrame;
 import edu.fiu.cs.kdrg.mining.temporal.io.RecordIterator;
 
-public class TimeVaryingLinearRegressionTest {
+public class BayesianLassoTest {
+
 	int dim =1; 
 	int numOfParticles =1000;
 	int lag = 1;
-	double lambda1 = 1.0;
+	double lambda = 1.0;
 	double lambda2 = 1.0;
 	
-	TimeVaryingLinearRegression tvlr = new TimeVaryingLinearRegression(dim,numOfParticles,lag,lambda1,lambda2);
+	BayesianLasso bayesianLasso = new BayesianLasso(dim,numOfParticles,lag,lambda);
 	
 	RecordIterator iterator = new RecordIterator("data/records.data");
 
@@ -30,18 +31,16 @@ public class TimeVaryingLinearRegressionTest {
 				lag --;
 				continue;
 			}else if(lag == 0){
-				tvlr.setTimeFrame(tf);
+				bayesianLasso.setTimeFrame(tf);
 				lag --;
 			}
 			
-			tvlr.onlineTrain(temp);
+			bayesianLasso.onlineTrain(temp);
 			System.out.println("mean");
-			tvlr.getPosteriorMean(0).print();
+			bayesianLasso.getPosteriorMean(0).print();
 			System.out.println("variance");
-			tvlr.getPosteriorVariance(0).print();
+			bayesianLasso.getPosteriorVariance(0).print();
 		}
 	}
-
-	
 
 }

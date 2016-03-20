@@ -7,6 +7,7 @@ import org.apache.commons.math3.distribution.ExponentialDistribution;
 import org.apache.commons.math3.distribution.GammaDistribution;
 import org.apache.commons.math3.distribution.MultivariateNormalDistribution;
 import org.apache.commons.math3.distribution.NormalDistribution;
+import org.apache.commons.math3.distribution.TDistribution;
 import org.ejml.simple.SimpleMatrix;
 
 import gnu.trove.iterator.TIntIterator;
@@ -69,6 +70,15 @@ public class Utility {
 		return ret;
 	}
 
+	public static SimpleMatrix sampleExpDistribution(int size, ExponentialDistribution exp) {
+		double[] temp1 = exp.sample(size);
+		SimpleMatrix ret = SimpleMatrix.identity(size);
+		for (int i = 0; i < size; i++) {
+			ret.set(i, i, Math.sqrt(temp1[i]));
+		}
+		return ret;
+	}
+
 	/**
 	 * This function is used to compute the density of standard normal
 	 * distribution, given a real number x.
@@ -113,5 +123,9 @@ public class Utility {
 		}
 		MultivariateNormalDistribution norm = new MultivariateNormalDistribution(meanArray, covArray);
 		return new SimpleMatrix(meanArray.length, 1, true, norm.sample());
+	}
+
+	public static TDistribution createTDistribution(double degree) {
+		return new TDistribution(degree);
 	}
 }
