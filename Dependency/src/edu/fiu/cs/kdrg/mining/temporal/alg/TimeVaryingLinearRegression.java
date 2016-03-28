@@ -198,6 +198,8 @@ public class TimeVaryingLinearRegression implements OnlineRegression {
 
 		this.particleWeights = new double[dimension][numOfParticles];
 		this.randForCoefficient = new SimpleMatrix[dimension][numOfParticles];
+		
+		tf = new TimeFrame(lag, dimension);
 
 		for (int d = 0; d < dimension; d++) {
 			for (int p = 0; p < numOfParticles; p++) {
@@ -299,7 +301,9 @@ public class TimeVaryingLinearRegression implements OnlineRegression {
 				mean = x.dot(weights);
 				SimpleMatrix I_plus_C = identity.plus(variancesForState[d][p]);
 				SimpleMatrix temp = x.elementMult(getStateCoefficient(d, p));
-				var = sigmaSquares[d][p] + temp.mult(I_plus_C).dot(temp);
+//				System.out.println(temp.numRows() +"X"+temp.numCols());
+//				System.out.println(I_plus_C.numRows() + "X" + I_plus_C.numCols());
+				var = sigmaSquares[d][p] + temp.transpose().mult(I_plus_C).dot(temp);
 
 				double w = Utility.standardNormDensity((y - mean) / Math.sqrt(var));
 				total += w;

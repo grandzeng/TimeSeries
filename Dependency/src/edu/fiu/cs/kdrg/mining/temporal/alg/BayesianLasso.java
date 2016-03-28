@@ -128,6 +128,8 @@ public class BayesianLasso implements OnlineRegression {
 
 		this.particleWeights = new double[dimension][numOfParticles];
 		this.randForCoefficient = new SimpleMatrix[dimension][numOfParticles];
+		
+		tf = new TimeFrame(lag, dimension);
 
 		for (int d = 0; d < dimension; d++) {
 			for (int p = 0; p < numOfParticles; p++) {

@@ -48,7 +48,7 @@ public class Simulator {
 	/**
 	 * The sparsity ratio.
 	 */
-	private double sparsity = 0.3;
+	private double sparsity = 0.1;
 
 	/**
 	 * The mean of the coefficients
@@ -95,7 +95,7 @@ public class Simulator {
 	 */
 	public void metadata(int timestamp) {
 		// constant dependency
-		if (timestamp != 0){
+		if (timestamp != 0) {
 			writer.writeMetadata(timestamp, dependency);
 			return;
 		}
@@ -105,9 +105,33 @@ public class Simulator {
 			for (int j = 0; j < dependency.numCols(); j++) {
 				p = rand.nextDouble();
 				if (p < sparsity) {
-					do{
+					do {
 						temp = rand.nextGaussian();
-					}while(Math.abs(temp)>0.5);
+					} while (Math.abs(temp) > 0.5 && Math.abs(temp*std + mean) > 1.0);
+					dependency.set(i, j, temp * std + mean);
+				} else {
+					dependency.set(i, j, 0.0);
+				}
+			}
+		}
+		writer.writeMetadata(timestamp, dependency);
+	}
+
+	public void varyingMetadata(int timestamp, int interval) {
+		if (timestamp % interval != 0) {
+			writer.writeMetadata(timestamp, dependency);
+			return;
+		}
+
+		double p;
+		double temp;
+		for (int i = 0; i < dependency.numRows(); i++) {
+			for (int j = 0; j < dependency.numCols(); j++) {
+				p = rand.nextDouble();
+				if (p < sparsity) {
+					do {
+						temp = rand.nextGaussian();
+					} while (Math.abs(temp) > 0.5);
 					dependency.set(i, j, temp * std + mean);
 				} else {
 					dependency.set(i, j, 0.0);
@@ -121,8 +145,10 @@ public class Simulator {
 	 * The simulation function
 	 */
 	public void simulate() {
+		int interval = 1000;
 		for (int r = 0; r < length; r++) {
-			metadata(r);
+//			metadata(r);
+			varyingMetadata(r, interval);
 			SimpleMatrix past = tf.getVector();
 			SimpleMatrix current = dependency.mult(past);
 			SimpleMatrix noise = new SimpleMatrix(dimension, 1);
@@ -166,7 +192,7 @@ public class Simulator {
 		}
 
 		public void writeMetadata(int timestamp, SimpleMatrix meta) {
-//			metadataWriter.print(timestamp + ",");
+			// metadataWriter.print(timestamp + ",");
 			outLine(meta, metadataWriter);
 
 		}
@@ -186,6 +212,7 @@ public class Simulator {
 
 	/**
 	 * The main Entry
+	 * 
 	 * @param args
 	 * @throws IOException
 	 */
