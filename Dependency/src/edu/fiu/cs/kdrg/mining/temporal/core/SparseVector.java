@@ -13,15 +13,17 @@ import java.util.List;
 import edu.fiu.cs.kdrg.mining.temporal.util.MathFunctions;
 
 /**
+ * This class is used to represent a sparse vector.
  * 
- * @author Liang Tang
- * @date Nov 14, 2013 10:10:47 PM
+ * @author Chunqiu Zeng
+ * @date Feb. 17, 2016
+ *
  */
 public class SparseVector {
 
 	TIntDoubleMap nonDefValues = new TIntDoubleHashMap();
 
-	double defaultVal = 0;
+	double defaultVal = 0.0;
 
 	int dimension = -1;
 
@@ -107,10 +109,21 @@ public class SparseVector {
 		}
 	}
 
+	/**
+	 * Set the value to 1, given the index.
+	 * 
+	 * @param dimIndex
+	 */
 	public void set(int dimIndex) {
 		set(dimIndex, 1);
 	}
 
+	/**
+	 * Set the value to be 0, if index falls in the range.
+	 * 
+	 * @param fromDimIndex
+	 * @param endDimIndex
+	 */
 	public void clear(int fromDimIndex, int endDimIndex) {
 		List<Integer> dimToRemove = new ArrayList<Integer>();
 		TIntIterator dimIter = nonDefValues.keySet().iterator();
@@ -143,8 +156,7 @@ public class SparseVector {
 			throw new IllegalArgumentException("index out of range!");
 		}
 		SparseVector ret = new SparseVector(dim, this.defaultVal);
-		TIntSet nonDefDim = new TIntHashSet(this.nonDefValues.keySet());
-		TIntIterator dimIter = nonDefDim.iterator();
+		TIntIterator dimIter = this.nonDefValues.keySet().iterator();
 		while (dimIter.hasNext()) {
 			int dimIndex = dimIter.next();
 			if (dimIndex < start || dimIndex >= end)
@@ -175,11 +187,14 @@ public class SparseVector {
 		return this;
 	}
 
+
+
 	public SparseVector add(int dimIndex, double scalar) {
 		this.set(dimIndex, this.get(dimIndex) + scalar);
 		return this;
 	}
 
+	
 	public SparseVector neg() {
 		this.defaultVal = -this.defaultVal;
 		TIntIterator dimIter = nonDefValues.keySet().iterator();
@@ -190,14 +205,16 @@ public class SparseVector {
 		return this;
 	}
 
-	public SparseVector subtract(SparseVector v) {
+
+	public SparseVector sub(SparseVector v) {
 		SparseVector tmp = v.copyNew();
 		tmp.neg();
 		return this.add(tmp);
 	}
 
-	public SparseVector plus(double scalar) {
-		if (scalar == 0.0)
+
+	public SparseVector add(double scalar) {
+		if (MathFunctions.almostEqual(scalar, 0.0))
 			return this;
 		this.defaultVal += scalar;
 		TIntSet dimIndices = new TIntHashSet(nonDefValues.keySet());
@@ -270,10 +287,7 @@ public class SparseVector {
 		return this;
 	}
 
-	// public SparseVector inverse() {
-	// pow(-1);
-	// return this;
-	// }
+
 
 	private double innerProductForBothZeroDefVal(SparseVector v) {
 		SparseVector sparseVec = this;

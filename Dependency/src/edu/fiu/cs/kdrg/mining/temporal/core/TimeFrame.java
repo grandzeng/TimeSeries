@@ -115,6 +115,18 @@ public class TimeFrame {
 		}
 		return ret;
 	}
+	
+	public SparseVector getSparseVector(){
+		SparseVector sv = new SparseVector(lag*dimension,0);
+		double value;
+		for(int l = 0;l<lag;l++){
+			for(int d=0;d<dimension;d++){
+				value= getValue(l,d);
+				sv.set(l*dimension+d, value);
+			}
+		}
+		return sv;
+	}
 
 	@Override
 	public int hashCode() {

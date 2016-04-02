@@ -39,7 +39,7 @@ public class BayesianLinearRegression implements OnlineRegression {
 	}
 
 	private void init() {
-		meanWeights = new SimpleMatrix[dimension];
+//		meanWeights = new SimpleMatrix[dimension];
 		iga = 1.0;
 		igbs = new double[dimension];
 		tf = new TimeFrame(lag, dimension);
